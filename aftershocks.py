@@ -35,8 +35,8 @@ def plot(region=''):
     """Plot earthquake magnitude and frequency."""
 
     # load earthquake data
-    df = pd.read_csv('2018-'+region.lower()+'-aftershocks.csv',
-                     index_col=0, parse_dates=True)
+    filename = '2018-' + (region.lower() or 'japan') + '-aftershocks.csv'
+    df = pd.read_csv(filename, index_col=0, parse_dates=True)
 
     # get magnitude and count
     mag = df.Magnitude.str[1:].astype('float32')
@@ -86,8 +86,8 @@ def plot(region=''):
                  pad=10.0)
 
     # save
-    fig.savefig('2018-'+region.lower()+'-aftershocks.svg')
-    fig.savefig('2018-'+region.lower()+'-aftershocks.png')
+    fig.savefig(filename[:-4]+'.svg')
+    fig.savefig(filename[:-4]+'.png')
 
 
 if __name__ == '__main__':
