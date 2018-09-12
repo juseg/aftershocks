@@ -3,9 +3,10 @@
 # GNU General Public License v3.0+ (https://www.gnu.org/licenses/gpl-3.0.txt)
 
 """
-Plot 2018 Iburi earthquake and aftershocks magnitude and frequency.
+Plot JMA recent earthquake magnitudes and frequency by region.
 """
 
+import re
 import datetime
 import pytz
 import matplotlib.dates as mdates
@@ -13,7 +14,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def load():
+def load(region=''):
     """Return latest earthquakes in JMA dataframe."""
 
     # read latest earthquakes list
@@ -21,13 +22,13 @@ def load():
     df = pd.read_html(url, header=0, index_col=0, parse_dates=True)[3]
 
     # select Iburi region
-    df = df[df['Region Name'] == 'Iburi-chiho Chutobu']
+    df = df[df['Region Name'].str.contains(region, flags=re.IGNORECASE)]
 
     # return dataframe
     return df
 
 
-def plot(df):
+def plot(df, region=''):
     """Plot earthquake magnitude and frequency."""
 
     # get magnitude and count
@@ -61,7 +62,7 @@ def plot(df):
     tz = pytz.timezone('Asia/Tokyo')
     ax.xaxis.set_major_locator(mdates.DayLocator(tz=tz))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('\nSep %d', tz=tz))
-    ax.xaxis.set_minor_locator(mdates.HourLocator(range(0, 24, 6), tz=tz))
+    ax.xaxis.set_minor_locator(mdates.HourLocator(range(0, 24, 12), tz=tz))
     ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H', tz=tz))
 
     # add current time
@@ -71,16 +72,28 @@ def plot(df):
             ha='right', va='bottom', rotation=90)
 
     # add title
-    ax.set_title("""2018 Iburi earthquake and aftershocks
-    Source: Japan Meteorological Agency (www.jma.go.jp)""", pad=10.0)
+    # FIXME replace 2018 by current year
+    region = region or 'japan'
+    ax.set_title("2018 "+region.title()+" earthquake and aftershocks\n"
+                 "Source: Japan Meteorological Agency (www.jma.go.jp)",
+                 pad=10.0)
 
     # save
-    fig.savefig('iburi-aftershocks.svg')
-    fig.savefig('iburi-aftershocks.png')
+    fig.savefig('2018-'+region.lower()+'-aftershocks.svg')
+    fig.savefig('2018-'+region.lower()+'-aftershocks.png')
 
 
 if __name__ == '__main__':
     """Main program for command-line execution."""
 
-    df = load()
-    plot(df)
+    import argparse
+
+    # parse arguments(future args: from lang)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-a', '--at', default='', metavar='NAME',
+                        help='filter by region name (default: Japan)')
+    args = parser.parse_args()
+
+    # load data and plot
+    df = load(region=args.at)
+    plot(df, region=args.at)
