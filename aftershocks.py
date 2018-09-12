@@ -15,21 +15,25 @@ import pandas as pd
 
 
 def load(region=''):
-    """Return latest earthquakes in JMA dataframe."""
+    """Download latest JMA earthquakes into csv file."""
 
     # read latest earthquakes list
     url = 'https://www.jma.go.jp/en/quake/quake_singendo_index.html'
-    df = pd.read_html(url, header=0, index_col=0, parse_dates=True)[3]
+    df = pd.read_html(url, header=0, index_col=0)[3]
 
     # select Iburi region
     df = df[df['Region Name'].str.contains(region, flags=re.IGNORECASE)]
 
-    # return dataframe
-    return df
+    # save to csv
+    df.to_csv('2018-'+region.lower()+'-aftershocks.csv')
 
 
-def plot(df, region=''):
+def plot(region=''):
     """Plot earthquake magnitude and frequency."""
+
+    # load earthquake data
+    df = pd.read_csv('2018-'+region.lower()+'-aftershocks.csv',
+                     index_col=0, parse_dates=True)
 
     # get magnitude and count
     mag = df.Magnitude.str[1:].astype('float32')
@@ -95,5 +99,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # load data and plot
-    df = load(region=args.at)
-    plot(df, region=args.at)
+    load(region=args.at)
+    plot(region=args.at)
