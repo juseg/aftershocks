@@ -20,14 +20,14 @@ def load(region=''):
 
     # read latest earthquakes list matching region
     url = 'https://www.jma.go.jp/en/quake/quake_singendo_index.html'
-    new = pd.read_html(url, header=0, index_col=0)[3]
+    new = pd.read_html(url, header=0, index_col=0)[3].astype('str')
     new = new[new['Region Name'].str.contains(region, flags=re.IGNORECASE)]
 
     # append to csv
     filename = '2018-' + (region.lower() or 'japan') + '-aftershocks.csv'
     if os.path.isfile(filename):
         old = pd.read_csv(filename, dtype='str', header=0, index_col=0)
-        new = old.append(new).drop_duplicates()
+        new = new.append(old).drop_duplicates()
     new.to_csv(filename)
 
 
