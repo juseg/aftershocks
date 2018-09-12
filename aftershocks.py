@@ -6,6 +6,7 @@
 Plot JMA recent earthquake magnitudes and frequency by region.
 """
 
+import os
 import re
 import datetime
 import pytz
@@ -17,15 +18,17 @@ import pandas as pd
 def load(region=''):
     """Download latest JMA earthquakes into csv file."""
 
-    # read latest earthquakes list
+    # read latest earthquakes list matching region
     url = 'https://www.jma.go.jp/en/quake/quake_singendo_index.html'
-    df = pd.read_html(url, header=0, index_col=0)[3]
+    new = pd.read_html(url, header=0, index_col=0)[3]
+    new = new[new['Region Name'].str.contains(region, flags=re.IGNORECASE)]
 
-    # select Iburi region
-    df = df[df['Region Name'].str.contains(region, flags=re.IGNORECASE)]
-
-    # save to csv
-    df.to_csv('2018-'+region.lower()+'-aftershocks.csv')
+    # append to csv
+    filename = '2018-' + (region.lower() or 'japan') + '-aftershocks.csv'
+    if os.path.isfile(filename):
+        old = pd.read_csv(filename, dtype='str', header=0, index_col=0)
+        new = old.append(new).drop_duplicates()
+    new.to_csv(filename)
 
 
 def plot(region=''):
