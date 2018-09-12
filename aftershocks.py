@@ -12,7 +12,9 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
 
-if __name__ == '__main__':
+
+def load():
+    """Return latest earthquakes in JMA dataframe."""
 
     # read latest earthquakes list
     url = 'https://www.jma.go.jp/en/quake/quake_singendo_index.html'
@@ -20,6 +22,13 @@ if __name__ == '__main__':
 
     # select Iburi region
     df = df[df['Region Name'] == 'Iburi-chiho Chutobu']
+
+    # return dataframe
+    return df
+
+
+def plot(df):
+    """Plot earthquake magnitude and frequency."""
 
     # get magnitude and count
     mag = df.Magnitude.str[1:].astype('float32')
@@ -68,3 +77,10 @@ if __name__ == '__main__':
     # save
     fig.savefig('iburi-aftershocks.svg')
     fig.savefig('iburi-aftershocks.png')
+
+
+if __name__ == '__main__':
+    """Main program for command-line execution."""
+
+    df = load()
+    plot(df)
