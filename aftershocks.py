@@ -12,6 +12,7 @@ import datetime
 import pytz
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import pandas as pd
 
 
@@ -52,6 +53,12 @@ def plot(region=''):
     ax.locator_params(axis='y', nbins=6)
     ax.tick_params(axis='y', colors='C1')
 
+    # add x label based on mid date
+    min_date = mag.index.min()
+    max_date = mag.index.max()
+    mid_date = min_date + 0.5*(max_date-min_date)
+    ax.set_xlabel(mid_date.strftime('%B %Y'))
+
     # plot magnitude
     ax = ax.twinx()
     ax.plot(mag.index, mag, linestyle='', marker='o', alpha=0.75, color='C0')
@@ -66,10 +73,10 @@ def plot(region=''):
 
     # pretty time ticks
     tz = pytz.timezone('Asia/Tokyo')
-    ax.xaxis.set_major_locator(mdates.DayLocator(tz=tz))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('\nSep %d', tz=tz))
-    ax.xaxis.set_minor_locator(mdates.HourLocator(range(0, 24, 12), tz=tz))
-    ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H', tz=tz))
+    ax.xaxis.set_major_locator(mdates.AutoDateLocator(tz=tz))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%d', tz=tz))
+    ax.xaxis.set_minor_locator(mdates.AutoDateLocator(
+        tz=tz, minticks=20, maxticks=40, interval_multiples=True))
 
     # add current time
     now = datetime.datetime.now(tz=tz)
@@ -80,8 +87,8 @@ def plot(region=''):
     # add title
     # FIXME replace 2018 by current year
     region = region or 'japan'
-    ax.set_title("2018 "+region.title()+" earthquake and aftershocks\n"
-                 "Source: Japan Meteorological Agency (www.jma.go.jp)",
+    ax.set_title('2018 ' + region.title() + ' earthquake and aftershocks\n'
+                 'Source: Japan Meteorological Agency (www.jma.go.jp)',
                  pad=10.0)
 
     # save
