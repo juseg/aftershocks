@@ -67,8 +67,8 @@ def plot(region=''):
     ax.tick_params(axis='y', colors='C0')
     ax.grid(axis='y')
 
-    # mark main earthquake
-    ax.text(mag.index[-1], mag[-1], '  M{:.1f}'.format(mag[-1]), color='C0',
+    # mark strongest earthquake
+    ax.text(mag.idxmax(), mag.max(), '  M{:.1f}'.format(mag.max()), color='C0',
             ha='left', va='center')
 
     # pretty time ticks
