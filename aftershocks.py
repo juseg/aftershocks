@@ -39,15 +39,15 @@ def plot(region=''):
     df = pd.read_csv(filename, index_col=0, parse_dates=True)
 
     # get magnitude and count
+    # FIXME automatize frequency bin width
     mag = df.Magnitude.str[1:].astype('float32')
-    cnt = mag.resample('3H').count().rename('Earthquakes per 3 hour')
+    cnt = mag.resample('6H').count().rename('Earthquakes per 6 hour')
 
     # init figure
     fig, ax = plt.subplots()
 
     # plot counts
-    ax.bar(cnt.index, cnt, alpha=0.75, color='C1', width=0.1)
-    ax.grid(True)
+    ax.bar(cnt.index, cnt, alpha=0.75, color='C1', width=0.2)
     ax.set_ylabel(cnt.name, color='C1')
     ax.set_ylim(0.0, 25.0)
     ax.locator_params(axis='y', nbins=5)
