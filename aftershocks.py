@@ -49,17 +49,16 @@ def plot(region=''):
     # plot counts
     ax.bar(cnt.index, cnt, alpha=0.75, color='C1', width=0.2)
     ax.set_ylabel(cnt.name, color='C1')
-    ax.set_ylim(0.0, 25.0)
-    ax.locator_params(axis='y', nbins=5)
+    ax.locator_params(axis='y', nbins=6)
     ax.tick_params(axis='y', colors='C1')
 
     # plot magnitude
     ax = ax.twinx()
     ax.plot(mag.index, mag, linestyle='', marker='o', alpha=0.75, color='C0')
-    ax.set_ylim(2.0, 7.0)
     ax.set_ylabel(mag.name, color='C0')
-    ax.locator_params(axis='y', nbins=5)
+    ax.locator_params(axis='y', nbins=6)
     ax.tick_params(axis='y', colors='C0')
+    ax.grid(axis='y')
 
     # mark main earthquake
     ax.text(mag.index[-1], mag[-1], '  M{:.1f}'.format(mag[-1]), color='C0',
