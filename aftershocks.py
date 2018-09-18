@@ -16,28 +16,33 @@ import matplotlib.ticker as mticker
 import pandas as pd
 
 
-def load(region=''):
+def download(region='', csv_file=None):
     """Download latest JMA earthquakes into csv file."""
 
     # read latest earthquakes list matching region
     url = 'https://www.jma.go.jp/en/quake/quake_singendo_index.html'
-    new = pd.read_html(url, header=0, index_col=0)[3].astype('str')
+    new = pd.read_html(url, header=0, index_col=0, parse_dates=True)[3].astype('str')
     new = new[new['Region Name'].str.contains(region, flags=re.IGNORECASE)]
 
+    # filename if none provided
+    csv_file = csv_file or '{year}-{region}-aftershocks.csv'.format(
+        year=new.index.min().strftime('%Y'), region=region.lower() or 'japan')
+
     # append to csv
-    filename = '2018-' + (region.lower() or 'japan') + '-aftershocks.csv'
-    if os.path.isfile(filename):
-        old = pd.read_csv(filename, dtype='str', header=0, index_col=0)
+    if os.path.isfile(csv_file):
+        old = pd.read_csv(csv_file, dtype='str', header=0, index_col=0, parse_dates=True)
         new = new.append(old).drop_duplicates()
-    new.to_csv(filename)
+    new.to_csv(csv_file)
+
+    # return csv file name
+    return csv_file
 
 
-def plot(region=''):
-    """Plot earthquake magnitude and frequency."""
+def plot(csv_file, out_file=None, title=None):
+    """Plot earthquake magnitude and frequency from csv file."""
 
     # load earthquake data
-    filename = '2018-' + (region.lower() or 'japan') + '-aftershocks.csv'
-    df = pd.read_csv(filename, index_col=0, parse_dates=True)
+    df = pd.read_csv(csv_file, index_col=0, parse_dates=True)
 
     # get magnitude and count
     # FIXME automatize frequency bin width
@@ -84,16 +89,16 @@ def plot(region=''):
     ax.text(now, 5.1, 'updated ' + now.strftime('%H:%M'), color='C3',
             ha='right', va='bottom', rotation=90)
 
-    # add title
-    # FIXME replace 2018 by current year
-    region = region or 'japan'
-    ax.set_title('2018 ' + region.title() + ' earthquake and aftershocks\n'
+    # infer title if None provided
+    title = title or ' '.join(csv_file.split('-')[:2]).title()
+    ax.set_title(title + ' earthquake and aftershocks\n'
                  'Source: Japan Meteorological Agency (www.jma.go.jp)',
                  pad=10.0)
 
     # save
-    fig.savefig(filename[:-4]+'.svg')
-    fig.savefig(filename[:-4]+'.png')
+    basename = os.path.splitext(filename)[0]
+    fig.savefig(basename+'.svg')
+    fig.savefig(basename+'.png')
 
 
 if __name__ == '__main__':
@@ -108,5 +113,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # load data and plot
-    load(region=args.at)
-    plot(region=args.at)
+    filename = download(region=args.at)
+    plot(filename)
