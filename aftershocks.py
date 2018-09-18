@@ -25,6 +25,7 @@ def download(region='', csv_file=None):
     new = new[new['Region Name'].str.contains(region, flags=re.IGNORECASE)]
 
     # filename if none provided
+    # FIXME handle empty data
     csv_file = csv_file or '{year}-{region}-aftershocks.csv'.format(
         year=new.index.min().strftime('%Y'), region=region.lower() or 'japan')
 
@@ -38,7 +39,7 @@ def download(region='', csv_file=None):
     return csv_file
 
 
-def plot(csv_file, out_file=None, title=None):
+def plot(csv_file, freq='1D', out_file=None, title=None):
     """Plot earthquake magnitude and frequency from csv file."""
 
     # load earthquake data
@@ -48,13 +49,14 @@ def plot(csv_file, out_file=None, title=None):
     # FIXME automatize frequency bin width
     mag = df.Magnitude.str[1:].astype('float32')
     mag = mag.tz_localize('UTC').tz_convert('Asia/Tokyo')
-    cnt = mag.resample('6H').count().rename('Earthquakes per 6 hour')
+    cnt = mag.resample(freq).count().rename('Earthquake frequency')
 
     # init figure
     fig, ax = plt.subplots()
 
     # plot counts
-    ax.bar(cnt.index, cnt, align='edge', alpha=0.75, color='C1', width=0.2)
+    ax.bar(cnt.index, cnt, align='edge', alpha=0.75, color='C1',
+           width=0.8*pd.to_timedelta(freq)/pd.to_timedelta('1D'))
     ax.set_ylabel(cnt.name, color='C1')
     ax.locator_params(axis='y', nbins=6)
     ax.tick_params(axis='y', colors='C1')
@@ -110,6 +112,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-a', '--at', default='', metavar='NAME',
                         help='filter by region name (default: Japan)')
+    parser.add_argument('-b', '--bin', default='1D', metavar='FREQ',
+                        help='frequency bin width (default: 1D)')
     parser.add_argument('-o', '--out', default='', metavar='FILE',
                         help='output figure file name (default: auto)')
     args = parser.parse_args()
@@ -117,4 +121,4 @@ if __name__ == '__main__':
     # load data and plot
     csv_file = (os.path.splitext(args.out)[0] + '.csv' if args.out else None)
     csv_file = download(region=args.at, csv_file=csv_file)
-    plot(csv_file, out_file=args.out)
+    plot(csv_file, freq=args.bin, out_file=args.out)
