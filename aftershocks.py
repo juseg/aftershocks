@@ -86,8 +86,8 @@ def plot(csv_file, out_file=None, title=None):
     # add current time
     now = datetime.datetime.now(tz=tz)
     ax.axvline(now, linestyle='--', color='C3')
-    ax.text(now, 5.1, 'updated ' + now.strftime('%H:%M'), color='C3',
-            ha='right', va='bottom', rotation=90)
+    ax.text(now, mag.max(), 'updated ' + now.strftime('%H:%M'), color='C3',
+            ha='right', va='top', rotation=90)
 
     # infer title if None provided
     title = title or ' '.join(csv_file.split('-')[:2]).title()
