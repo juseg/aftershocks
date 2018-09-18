@@ -96,9 +96,8 @@ def plot(csv_file, out_file=None, title=None):
                  pad=10.0)
 
     # save
-    basename = os.path.splitext(filename)[0]
-    fig.savefig(basename+'.svg')
-    fig.savefig(basename+'.png')
+    out_file = out_file or os.path.splitext(csv_file)[0]
+    fig.savefig(out_file)
 
 
 if __name__ == '__main__':
@@ -110,8 +109,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-a', '--at', default='', metavar='NAME',
                         help='filter by region name (default: Japan)')
+    parser.add_argument('-o', '--out', default='', metavar='FILE',
+                        help='output figure file name (default: auto)')
     args = parser.parse_args()
 
     # load data and plot
-    filename = download(region=args.at)
-    plot(filename)
+    csv_file = (os.path.splitext(args.out)[0] + '.csv' if args.out else None)
+    csv_file = download(region=args.at, csv_file=csv_file)
+    plot(csv_file, out_file=args.out)
