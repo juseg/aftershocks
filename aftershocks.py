@@ -47,13 +47,14 @@ def plot(csv_file, out_file=None, title=None):
     # get magnitude and count
     # FIXME automatize frequency bin width
     mag = df.Magnitude.str[1:].astype('float32')
+    mag = mag.tz_localize('UTC').tz_convert('Asia/Tokyo')
     cnt = mag.resample('6H').count().rename('Earthquakes per 6 hour')
 
     # init figure
     fig, ax = plt.subplots()
 
     # plot counts
-    ax.bar(cnt.index, cnt, alpha=0.75, color='C1', width=0.2)
+    ax.bar(cnt.index, cnt, align='edge', alpha=0.75, color='C1', width=0.2)
     ax.set_ylabel(cnt.name, color='C1')
     ax.locator_params(axis='y', nbins=6)
     ax.tick_params(axis='y', colors='C1')
