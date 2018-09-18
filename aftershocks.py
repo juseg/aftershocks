@@ -16,6 +16,14 @@ import matplotlib.ticker as mticker
 import pandas as pd
 
 
+def freqlabel(freq):
+    """Convert frequency string to English label."""
+    units = dict(H='hour', D='day', M='minute')
+    for unit, name in units.items():
+        freq = freq.replace('1'+unit, name).replace(unit, ' '+name+'s')
+    return freq
+
+
 def download(region='', csv_file=None):
     """Download latest JMA earthquakes into csv file."""
 
@@ -46,10 +54,9 @@ def plot(csv_file, freq='1D', out_file=None, title=None):
     df = pd.read_csv(csv_file, index_col=0, parse_dates=True)
 
     # get magnitude and count
-    # FIXME automatize frequency bin width
     mag = df.Magnitude.str[1:].astype('float32')
     mag = mag.tz_localize('UTC').tz_convert('Asia/Tokyo')
-    cnt = mag.resample(freq).count().rename('Earthquake frequency')
+    cnt = mag.resample(freq).count().rename('Earthquake per '+freqlabel(freq))
 
     # init figure
     fig, ax = plt.subplots()
