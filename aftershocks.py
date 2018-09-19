@@ -50,10 +50,10 @@ def plot(csv_file, freq='1D', out_file=None, title=None):
     """Plot earthquake magnitude and frequency from csv file."""
 
     # load earthquake data
-    df = pd.read_csv(csv_file, index_col=0, parse_dates=True)
+    mag = pd.read_csv(csv_file, index_col=0, parse_dates=True)
 
     # get magnitude and count
-    mag = df.Magnitude.str[1:].astype('float32')
+    mag = mag.Magnitude.str[1:].astype('float32')
     mag = mag.tz_localize('UTC').tz_convert('Asia/Tokyo')
     cnt = mag.resample(freq).count().rename('Earthquake per '+freqlabel(freq))
 
@@ -109,7 +109,7 @@ def plot(csv_file, freq='1D', out_file=None, title=None):
     fig.savefig(out_file)
 
 
-if __name__ == '__main__':
+def main():
     """Main program for command-line execution."""
 
     import argparse
@@ -128,3 +128,7 @@ if __name__ == '__main__':
     csv_file = (os.path.splitext(args.out)[0] + '.csv' if args.out else None)
     csv_file = download(region=args.at, csv_file=csv_file)
     plot(csv_file, freq=args.bin, out_file=args.out)
+
+
+if __name__ == '__main__':
+    main()
