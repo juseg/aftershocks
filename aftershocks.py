@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # Copyright (c) 2018, Julien Seguinot <seguinot@vaw.baug.ethz.ch>
 # GNU General Public License v3.0+ (https://www.gnu.org/licenses/gpl-3.0.txt)
 
@@ -55,7 +55,7 @@ def plot(csv_file, freq='1D', out_file=None, title=None):
     # get magnitude and count
     mag = mag.Magnitude.str[1:].astype('float32')
     mag = mag.tz_localize('UTC').tz_convert('Asia/Tokyo')
-    cnt = mag.resample(freq).count().rename('Earthquake per '+freqlabel(freq))
+    cnt = mag.resample(freq).count().rename('Earthquakes per '+freqlabel(freq))
 
     # init figure
     fig, ax = plt.subplots()
