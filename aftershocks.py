@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2018, Julien Seguinot <seguinot@vaw.baug.ethz.ch>
 # GNU General Public License v3.0+ (https://www.gnu.org/licenses/gpl-3.0.txt)
 
@@ -12,7 +12,6 @@ import datetime
 import pytz
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 import pandas as pd
 
 
@@ -29,7 +28,8 @@ def download(region='', csv_file=None):
 
     # read latest earthquakes list matching region
     url = 'https://www.jma.go.jp/en/quake/quake_singendo_index.html'
-    new = pd.read_html(url, header=0, index_col=0, parse_dates=True)[3].astype('str')
+    kwa = dict(header=0, index_col=0, parse_dates=True)
+    new = pd.read_html(url, **kwa)[3].astype('str')
     new = new[new['Region Name'].str.contains(region, flags=re.IGNORECASE)]
 
     # filename if none provided
@@ -39,7 +39,7 @@ def download(region='', csv_file=None):
 
     # append to csv
     if os.path.isfile(csv_file):
-        old = pd.read_csv(csv_file, dtype='str', header=0, index_col=0, parse_dates=True)
+        old = pd.read_csv(csv_file, dtype='str', **kwa)
         new = new.append(old).drop_duplicates()
     new.to_csv(csv_file)
 
