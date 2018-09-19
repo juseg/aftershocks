@@ -9,7 +9,6 @@ Plot JMA recent earthquake magnitudes and frequency by region.
 import os
 import re
 import datetime
-import pytz
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -87,14 +86,14 @@ def plot(csv_file, freq='1D', out_file=None, title=None):
             ha='left', va='center')
 
     # pretty time ticks
-    tz = pytz.timezone('Asia/Tokyo')
-    ax.xaxis.set_major_locator(mdates.AutoDateLocator(tz=tz))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%d', tz=tz))
+    timezone = mag.index.tz
+    ax.xaxis.set_major_locator(mdates.AutoDateLocator(tz=timezone))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%d', tz=timezone))
     ax.xaxis.set_minor_locator(mdates.AutoDateLocator(
-        tz=tz, minticks=20, maxticks=40, interval_multiples=True))
+        tz=timezone, minticks=20, maxticks=40, interval_multiples=True))
 
     # add current time
-    now = datetime.datetime.now(tz=tz)
+    now = datetime.datetime.now(tz=timezone)
     ax.axvline(now, linestyle='--', color='C3')
     ax.text(now, mag.max(), 'updated ' + now.strftime('%H:%M'), color='C3',
             ha='right', va='top', rotation=90)
