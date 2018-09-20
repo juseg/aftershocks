@@ -3,7 +3,7 @@
 # GNU General Public License v3.0+ (https://www.gnu.org/licenses/gpl-3.0.txt)
 
 """
-Plot JMA recent earthquake magnitudes and frequency by region.
+Plot recent earthquakes in Japan by region.
 """
 
 import os

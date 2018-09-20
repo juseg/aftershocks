@@ -10,7 +10,7 @@ with open('README.rst', 'r') as f:
     README = f.read()
 
 setup(name='aftershocks',
-      version='0.0',
+      version='0.1.0',
       description='Plot recent earthquakes in Japan by region',
       long_description=README,
       long_description_content_type='text/x-rst',
