@@ -4,6 +4,13 @@
 Aftershocks
 ===========
 
+.. image:: https://img.shields.io/pypi/v/aftershocks.svg
+   :target: https://pypi.python.org/pypi/aftershocks
+.. image:: https://img.shields.io/pypi/l/aftershocks.svg
+   :target: https://www.gnu.org/licenses/gpl-3.0.txt
+.. image:: https://zenodo.org/badge/149678580.svg
+   :target: https://zenodo.org/badge/latestdoi/149678580
+
 A small script to plot recent earthquake magnitudes and frequency in Japan by
 region, using the Japan Meteorological Agency website_. Used to track
 aftershocks of the 2018 Iburi earthquake_.
