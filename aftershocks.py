@@ -28,7 +28,7 @@ def download(region='', csv_file=None):
     # read latest earthquakes list matching region
     url = 'https://www.jma.go.jp/en/quake/quake_singendo_index.html'
     kwa = dict(header=0, index_col=0, parse_dates=True)
-    new = pd.read_html(url, **kwa)[3].astype('str')
+    new = pd.read_html(url, match='Magnitude', **kwa)[0].astype('str')
     new = new[new['Region Name'].str.contains(region, flags=re.IGNORECASE)]
 
     # filename if none provided
