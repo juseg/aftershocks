@@ -61,6 +61,7 @@ def plot(csv_file, freq='1D', out_file=None, title=None):
 
     # init figure
     fig, ax = plt.subplots()
+    pd.plotting.register_matplotlib_converters()
 
     # plot counts
     ax.bar(cnt.index, cnt, align='edge', alpha=0.75, color='C1',
