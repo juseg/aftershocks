@@ -27,9 +27,12 @@ def download(region='', csv_file=None):
 
     # read latest earthquakes list matching region
     url = 'https://www.jma.go.jp/en/quake/quake_singendo_index.html'
-    kwa = dict(header=0, index_col=0, parse_dates=True)
+    kwa = dict(header=0, index_col=0)
     new = pd.read_html(url, match='Magnitude', **kwa)[0].astype('str')
     new = new[new['Region Name'].str.contains(region, flags=re.IGNORECASE)]
+
+    # parse dates (JST is not a recognized timezone)
+    new.index = pd.to_datetime(new.index.str.replace('JST', 'UTC-9'))
 
     # filename if none provided
     # FIXME handle empty data
@@ -54,7 +57,6 @@ def plot(csv_file, freq='1D', out_file=None, title=None):
 
     # get magnitude and count
     mag = mag.Magnitude.str[1:].astype('float32')
-    mag = mag.tz_localize('UTC').tz_convert('Asia/Tokyo')
     cnt = mag.resample(freq).count().rename('Earthquakes per '+freqlabel(freq))
 
     # init figure
